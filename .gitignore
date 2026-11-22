@@ -8,3 +8,7 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Pickle의 GitHub 연결에는 workflows 권한이 없어 워크플로 파일은 push할 수 없다.
+# (필요하면 GitHub 웹 UI에서 직접 추가) — 로컬 참고용으로만 보관
+.github/

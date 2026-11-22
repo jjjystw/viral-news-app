@@ -1,7 +1,7 @@
 # 📱 바이럴뉴스 — 국내 핫이슈 모바일 웹앱 (PWA)
 
 국내 주요 언론사의 공개 RSS를 모아 **바이럴 점수**로 정렬해 보여주는 서버 없는 모바일 웹앱입니다.
-GitHub Pages에 올려 두고, GitHub Actions가 **매시 정각마다** 뉴스를 다시 모아 자동으로 갱신합니다.
+GitHub Pages에 올려 두고, **매시간** 뉴스를 다시 모아 자동으로 갱신합니다.
 아이폰 사파리에서 열어 **홈 화면에 추가**하면 앱처럼(전체 화면·자체 아이콘) 쓸 수 있습니다.
 
 - 앱 주소: **https://jjjystw.github.io/viral-news-app/**
@@ -25,16 +25,15 @@ GitHub Pages에 올려 두고, GitHub Actions가 **매시 정각마다** 뉴스�
 | `icon.svg`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` | 홈 화면 아이콘 |
 | `make_icons.py` | 아이콘 재생성기(`pip install pillow` 필요, 평소엔 불필요) |
 | `validate_build.py` | 빌드 결과 검증기(빈 제목·NaN 점수·깨진 날짜·중복 링크 등 확인) |
-| `.github/workflows/update-news.yml` | 매시 정각 자동 갱신 워크플로 |
 
-## 자동 갱신 (GitHub Actions)
+## 자동 갱신
 
-`.github/workflows/update-news.yml` 이 매시 정각(`0 * * * *`)에 `python3 fetch_news.py` 를 돌리고,
-`index.html`·`data.json` 이 바뀌면 `github-actions[bot]` 이름으로 커밋·푸시합니다. Pages가 그대로 새 화면을 서빙합니다.
+매시간 `python3 fetch_news.py` 를 실행해 `index.html`·`data.json` 을 다시 만들고, 바뀐 내용을 이 저장소의 `main` 브랜치에 커밋·푸시합니다. GitHub Pages는 몇 초 안에 새 화면을 서빙하므로 앱을 열면 항상 최신 뉴스가 나옵니다.
 
-- 수동으로 한 번 돌리기: 저장소 → **Actions** → *뉴스 자동 갱신* → **Run workflow**
-- 명령으로: `gh workflow run update-news.yml -R jjjystw/viral-news-app`
-- `.cache/`(매체 링크 해석·페이지 요약 캐시)는 Actions 캐시로 넘겨서 매번 처음부터 받지 않게 했습니다.
+- 앱 상단의 `LIVE` 배지 옆에 `11월 22일 (일) 22:07 기준` 처럼 마지막 갱신 시각이 찍힙니다.
+- 데이터가 3시간 넘게 갱신되지 않으면 앱 위에 **"데이터가 오래됐어요"** 배너가 떠서 갱신이 멈춘 것을 바로 알 수 있습니다.
+- 갱신 주기를 바꾸거나 멈추려면 이 저장소를 갱신하는 자동화 설정에서 조정합니다.
+- GitHub Actions로 옮기고 싶다면 `python3 fetch_news.py` 를 실행하고 `index.html`·`data.json` 을 커밋·푸시하는 워크플로를 `.github/workflows/` 에 추가하면 됩니다(매시 정각 cron: `0 * * * *`, `permissions: contents: write`).
 
 ## 로컬 사용법
 
