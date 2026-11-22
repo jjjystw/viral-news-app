@@ -1,0 +1,10 @@
+# 수집 캐시 (매체 링크 해석 결과·페이지 요약) — 저장소에는 올리지 않는다
+.cache/
+
+# 파이썬
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
