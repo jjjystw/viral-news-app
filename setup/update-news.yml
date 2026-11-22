@@ -1,0 +1,51 @@
+name: 뉴스 자동 갱신
+
+# 매시 정각(UTC) = 매시 정각(KST)에 국내 언론사 RSS를 다시 모아
+# data.json 과 index.html 을 갱신한다. GitHub Pages 는 main 브랜치 루트를 그대로 서빙.
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-news
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: 저장소 받기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 링크·요약 캐시 복원
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: news-cache-${{ github.run_id }}
+          restore-keys: |
+            news-cache-
+
+      - name: 뉴스 수집 · 빌드
+        run: python3 fetch_news.py
+
+      - name: 변경사항 커밋 · 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A index.html data.json
+          if git diff --cached --quiet; then
+            echo "변경된 내용이 없어 커밋을 건너뜁니다."
+            exit 0
+          fi
+          git commit -m "chore: 뉴스 자동 갱신 $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')"
+          git push
